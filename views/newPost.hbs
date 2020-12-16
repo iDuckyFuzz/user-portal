@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update</title>
+</head>
+
+<body>
+    {{>nav}}
+    <h1>Create New Posts</h1>
+    <div class="blog-post">
+        <form action="/newPost/{{id}}" method="post">
+            <input type="text" name="title" id="title">
+            <textarea id="content" class="text" cols="86" rows="20" name="content"></textarea>
+            <button id="create-post" type="submit">Create Post</button>
+        </form>
+    </div>
+    <h3>{{result}}</h3>
+</body>
+
+</html>

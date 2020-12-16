@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update</title>
+</head>
+
+<body>
+    {{>nav}}
+    <h1>{{name}}'s Profile</h1>
+    <label>Name: {{name}}</label><br><br>
+    <label>Job: {{job}}</label><br><br>
+    <label>Location: {{location}}</label><br><br>
+    <label>Email: {{email}}</label><br><br>
+    <label>Age: {{age}}</label><br><br>
+
+    <form action="/newPost/{{id}}" method="get">
+        <button type="submit">New Post</button>
+    </form>
+
+    <form action="/allPosts/{{id}}" method="post">
+        <button type="submit">All Posts</button>
+    </form>
+</body>
+
+</html>

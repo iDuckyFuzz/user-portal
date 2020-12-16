@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update</title>
+</head>
+
+<body>
+    {{>nav}}
+    <h1>Update User</h1>
+    <form action="/update/{{id}}" method="post">
+        <label for="userName">Name:</label><br>
+        <input type="text" name="userName" id="userName" value="{{name}}"><br><br>
+
+        <label for="userJob">Job:</label><br>
+        <input type="text" name="userJob" id="userJob" value="{{job}}"><br><br>
+
+        <label for="userLocation">Location:</label><br>
+        <input type="text" name="userLocation" id="userLocation" value="{{location}}"><br><br>
+
+        <label for="userAge">Age: </label><br>
+        <input type="text" name="userAge" id="userAge" value="{{age}}"><br><br>
+
+        <label for="userEmail">Email:</label><br>
+        <input type="text" name="userEmail" id="userEmail" value="{{email}}"><br><br>
+
+        <label for="userPassword">Password:</label><br>
+        <input type="password" name="userPassword" id="userPassword" value="{{password}}"><br><br>
+
+        <button type="submit">Update User</button>
+    </form>
+</body>
+
+</html>

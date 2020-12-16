@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register User</title>
+</head>
+
+<body>
+    {{>nav}}
+    <h1>Register a new user</h1>
+    <form action="/register" method="POST">
+        <label for="userName">Name:</label><br/>
+        <input type="text" name="userName" id="userName"><br/><br/>
+
+        <label for="userAge">Age:</label><br/>
+        <input type="text" name="userAge"  id="userAge"><br/><br/>
+
+        <label for="userLocation">Location:</label><br/>
+        <input type="text" name="userLocation" id="userLocation"><br/><br/>
+        
+        <label for="userJob">Job:</label><br/>
+        <input type="text" name="userJob" id="userJob"><br/><br/>
+
+        <label for="userEmail">Email:</label><br/>
+        <input type="text" name="userEmail" id="userEmail"><br/><br/>
+
+        <label for="userPassword">Password:</label><br/>
+        <input type="password" name="userPassword" id="userPassword"><br/><br/>
+        
+        <button type="submit">Register User</button>
+
+        <h3>{{result}}</h3>
+    </form>
+</body>
+
+</html>

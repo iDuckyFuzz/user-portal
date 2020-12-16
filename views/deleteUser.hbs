@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete User</title>
+</head>
+<body>
+    {{>nav}}
+    <h1>Delete User</h1>
+    <h3>Are you sure you want to delete user: {{name}}</h3>
+    <h2>Warning!: Deleting this user will remove all of the user associated content.</h3>
+    <form action="/delete/{{id}}" method="post">
+    <button type="submit">Delete</button>
+    </form>
+</body>
+</html>

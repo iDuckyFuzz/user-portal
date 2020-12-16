@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Users</title>
+</head>
+
+<body>
+
+    <body>
+        {{>nav}}
+        <h1>All Users</h1>
+        <div class="users">
+            {{#each users}}
+            <div class="user">
+                <h3>{{this.name}}</h3>
+                 <form action="/profile/{{this.id}}" method="post">
+                    <button type="submit">Profile</button>
+                </form>
+                <form action="/updateUser/{{this.id}}" method="post">
+                    <button type="submit">Update</button>
+                </form>
+                <form action="/deleteUser/{{this.id}}" method="post">
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+            {{/each}}
+        </div>
+    </body>
+</body>
+
+</html>

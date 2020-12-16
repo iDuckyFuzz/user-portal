@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Blog Posts</title>
+</head>
+
+<body>
+
+    <body>
+        {{>nav}}
+        <h1>{{name}} All User Blog Posts</h1>
+        <form action="/blogPosts" method="post">
+            <input type="text" name="name" id="name">
+            <button id="search" type="submit">Search</button>
+        </form>
+        {{#each posts}}
+        <h3>{{this.title}}</h3>
+        {{/each}}
+    </body>
+</body>
+
+</html>
