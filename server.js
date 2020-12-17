@@ -107,10 +107,15 @@ app.get("/blogPosts", (req, res) => {
 app.post("/post/:id", (req, res) => {
     const id = req.params.id;
     const post = [id];
-    db.query("SELECT * FROM blog_posts WHERE post_id = ? ", post, (error, results) => {
+    db.query("SELECT a.*, b.name FROM blog_posts a inner join users b on a.user_id = b.id WHERE post_id = ? ", post, (error, results) => {
+        const day = results[0].dt.toLocaleDateString().split('/')[1];
+        const month = results[0].dt.toLocaleDateString().split('/')[0];
+        const year = results[0].dt.toLocaleDateString().split('/')[2];
         res.render("post", {
             title: results[0].title,
-            content: results[0].content
+            content: results[0].content,
+            name: results[0].name,
+            date: `${day}/${month}/${year}`
         });
     })
 });
@@ -196,14 +201,22 @@ app.post("/deleteUser/:id", (req, res) => {
 app.post("/delete/:id", (req, res) => {
     const id = req.params.id;
     const user = [id];
-    db.query("DELETE FROM users where id = ?", user, (error, results) => {
+    db.query("DELETE FROM blog_posts where user_id = ?", user, (error, results) => {
         if (error) {
             res.render("delete", {
                 result: error
             });
         } else {
-            res.render("delete", {
-                result: "User succesfully removed!"
+            db.query("DELETE FROM users where id = ?", user, (error, results) => {
+                if (error) {
+                    res.render("delete", {
+                        result: error
+                    });
+                } else {
+                    res.render("delete", {
+                        result: "User succesfully removed!"
+                    });
+                }
             });
         }
     });
