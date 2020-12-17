@@ -11,6 +11,7 @@
 <body>
     {{>nav}}
     <h1>{{name}} All Posts</h1>
+    <h3>{{result}}</h3>
     <div class="blogs">
         {{#each posts}}
         <form id="blog-posts{{this.post_id}}" action="/post/{{this.post_id}}" method="post">

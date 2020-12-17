@@ -57,15 +57,21 @@ app.post("/allPosts/:id", (req, res) => {
     const user = [id];
     // query the database - return the results and feed them into the users variable in index.hbs
     db.query("SELECT * FROM blog_posts where user_id = ? order by dt desc", user, (error, results) => {
-        res.render("allPosts", {
-            posts: results
-        });
+        if (results.length > 0) {
+            res.render("allPosts", {
+                posts: results
+            });
+        } else {
+            res.render("allPosts", {
+                result: "This user doesn't have any posts!"
+            });
+        }
     })
 });
 
 app.get("/newPost/:id", (req, res) => {
     const id = req.params.id;
-    res.render("newPost",{id:id})
+    res.render("newPost", { id: id })
 });
 
 app.post("/newPost/:id", (req, res) => {
@@ -111,6 +117,7 @@ app.post("/post/:id", (req, res) => {
         const day = results[0].dt.toLocaleDateString().split('/')[1];
         const month = results[0].dt.toLocaleDateString().split('/')[0];
         const year = results[0].dt.toLocaleDateString().split('/')[2];
+
         res.render("post", {
             title: results[0].title,
             content: results[0].content,
@@ -173,7 +180,6 @@ app.post("/update/:id", (req, res) => {
 
     const query = "UPDATE users SET name = ?, age = ?, location = ?, job = ?, email = ?, pword = ? WHERE id = ?";
     const user = [name, age, location, job, email, password, id];
-    console.log(user);
     db.query(query, user, (error, results) => {
         if (error) {
             res.render("update", {
