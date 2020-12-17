@@ -1,0 +1,7 @@
+<div class="blogs">
+    {{#each posts}}
+    <form id="blog-posts{{this.post_id}}" action="/post/{{this.post_id}}" method="post">
+        <h3 onclick="document.getElementById('blog-posts{{this.post_id}}').submit();">{{this.title}}</h3>
+    </form>
+    {{/each}}
+</div> 
