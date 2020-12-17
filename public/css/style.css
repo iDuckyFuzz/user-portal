@@ -71,6 +71,18 @@ nav a{
     color:black;
 }
 
+.blogs h3{
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.blogs h3:hover{
+    border-radius: 4px;
+    background-color: grey;
+    color:black;
+}
+
 button {
   border: none;
   color: white;

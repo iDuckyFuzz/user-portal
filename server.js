@@ -104,6 +104,17 @@ app.get("/blogPosts", (req, res) => {
     })
 });
 
+app.post("/post/:id", (req, res) => {
+    const id = req.params.id;
+    const post = [id];
+    db.query("SELECT * FROM blog_posts WHERE post_id = ? ", post, (error, results) => {
+        res.render("post", {
+            title: results[0].title,
+            content: results[0].content
+        });
+    })
+});
+
 app.post("/blogPosts", (req, res) => {
     const name = req.body.name;
     const user = [name];
