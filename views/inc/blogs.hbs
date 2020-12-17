@@ -2,6 +2,9 @@
     {{#each posts}}
     <form id="blog-posts{{this.post_id}}" action="/post/{{this.post_id}}" method="post">
         <h3 class="title" onclick="document.getElementById('blog-posts{{this.post_id}}').submit();">{{this.title}}</h3>
+        <h4>Author: {{this.name}}</h2>
+        <h4>Published: {{this.dt}}</h2>
+        <hr class="solid">
     </form>
     {{/each}}
 </div> 
