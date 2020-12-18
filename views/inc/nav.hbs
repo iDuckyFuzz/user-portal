@@ -3,16 +3,25 @@
     <a class="nav" href="/">
         <li>Home</li>
     </a>
-    <a class="nav" href="/register">
-        <li>Register</li>
+    {{#if loggedIn}}
+    <a class="nav" href="/blogPosts">
+        <li>All Blog Posts</li>
     </a>
     <a class="nav" href="/allUsers">
         <li>All Users</li>
     </a>
-    <a class="nav" href="/blogPosts">
-        <li>All Blog Posts</li>
+    {{else}}
+    <a class="nav" href="/register">
+        <li>Register</li>
     </a>
+    {{/if}}
+    {{#if loggedIn}}
+    <a class="nav" href="/logout">
+        <li>Log Out</li>
+    </a>
+    {{else}}
     <a class="nav" href="/login">
-        <li>Login</li>
+        <li>Log In</li>
     </a>
+    {{/if}}
 </nav>

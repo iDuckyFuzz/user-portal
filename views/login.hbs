@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    {{>nav}}
+    {{>nav this}}
     <h1>Login</h1>
     <form action="/login" method="post">
         <label for="userName">Email:</label><br>
@@ -18,7 +18,7 @@
         <label for="userPassword">Password:</label><br>
         <input type="password" name="userPassword" id="userPassword"><br><br>
 
-        <button type="submit">Login</button>
+        <button type="submit">Log In</button>
     </form>
     <h3>{{message}}</h3>
 </body>

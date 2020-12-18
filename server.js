@@ -6,6 +6,8 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
+const { REFUSED } = require("dns");
+let authenticated = false;
 
 dotenv.config({ path: './.env' });
 
@@ -48,7 +50,17 @@ app.set('view engine', 'hbs');
 app.set('views', viewsPath);
 
 app.get("/", (req, res) => {
-    res.render("index");
+    res.render("index", {
+        loggedIn: authenticated,
+        });
+});
+
+app.get("/logout", (req, res) => {
+    authenticated = false;
+    res.cookie('topsecret',{expires: 0});
+    res.render('logout', {
+        loggedIn: authenticated,
+        });
 });
 
 app.get("/allUsers", (req, res) => {
@@ -60,19 +72,25 @@ app.get("/allUsers", (req, res) => {
                 // query the database - return the results and feed them into the users variable in index.hbs
                 db.query("SELECT * FROM users", (error, results) => {
                     res.render("allUsers", {
-                        users: results
+                        users: results,
+                        loggedIn: authenticated,
+                        
                     });
                 })
             } else  {
                 db.query("SELECT * FROM users where id = ?", [decoded.id], (error, results) => {
                     res.render("allUsers", {
-                        users: results
+                        users: results,
+                        loggedIn: authenticated,
+                        
                     });
                 })
             }
         });
     } catch (error) {
-        res.render("notAuthorised");
+        res.render("notAuthorised", {
+            loggedIn: authenticated,
+            });
     }
 });
 
@@ -88,18 +106,24 @@ app.post("/allPosts/:id", (req, res) => {
         });
         if (results.length > 0) {
             res.render("allPosts", {
-                posts: results
+                posts: results,
+                loggedIn: authenticated,
+                
             });
         } else {
             res.render("allPosts", {
-                result: "This user doesn't have any posts!"
+                result: "This user doesn't have any posts!",
+                loggedIn: authenticated,
+                
             });
         }
     })
 });
 
 app.get("/login", (req, res) => {
-    res.render("login");
+    res.render("login", {
+        loggedIn: authenticated,
+        });
 });
 
 app.post("/login", (req, res) => {
@@ -107,7 +131,9 @@ app.post("/login", (req, res) => {
     try {
         if (!userName || !userPassword) {
             return res.status(400).render('login', {
-                message: "Please enter a valid email address and password!"
+                message: "Please enter a valid email address and password!",
+                loggedIn: authenticated,
+                
             });
         }
     } catch (error) {
@@ -119,15 +145,18 @@ app.post("/login", (req, res) => {
         if (!results || !(await bcrypt.compare(userPassword, results[0].pword))) {
             //401 is forbidden access
             res.status(401).render('login', {
-                message: "Invalid username or password!"
+                message: "Invalid username or password!",
+                loggedIn: authenticated,
+                
             });
         } else {
+            authenticated = true;
+
             const id = results[0].id;
             // in JS if key and variable are names the same you don't need to use :
             const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
                 expiresIn: process.env.JWT_EXPIRES_IN
             });
-            console.log("The token is: " + token);
             const cookieOptions = {
                 expires: new Date(
                     Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
@@ -135,14 +164,20 @@ app.post("/login", (req, res) => {
                 httpOnly: true
             }
             res.cookie('topsecret', token, cookieOptions);
-            res.status(200).render('index');
+            res.status(200).render('index',{
+                loggedIn: authenticated,
+            });
         }
     })
 });
 
 app.get("/newPost/:id", (req, res) => {
     const id = req.params.id;
-    res.render("newPost", { id: id })
+    res.render("newPost", { 
+        id: id,
+        loggedIn: authenticated,
+        
+    })
 });
 
 app.post("/newPost/:id", (req, res) => {
@@ -160,11 +195,15 @@ app.post("/newPost/:id", (req, res) => {
         (error, results) => {
             if (error) {
                 res.render("newPost", {
-                    result: error
+                    result: error,
+                    loggedIn: authenticated,
+                    
                 });
             } else {
                 res.render("newPost", {
-                    result: "New post created succesfully!"
+                    result: "New post created succesfully!",
+                    loggedIn: authenticated,
+                    
                 });
             }
         }
@@ -177,7 +216,10 @@ app.get("/blogPosts", (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         db.query("SELECT * FROM users where id = ? and role = 'admin'", [decoded.id], (error, results) => {
             if (results.length === 0) {
-                res.render("notAuthorised");
+                res.render("notAuthorised",{
+                    loggedIn: authenticated,
+                    
+                });
             } else {
                 // query the database - return the results and feed them into the users variable in index.hbs
                 db.query("SELECT a.*, b.* FROM blog_posts a inner join users b on a.user_id = b.id order by a.dt desc", (error, results) => {
@@ -185,13 +227,18 @@ app.get("/blogPosts", (req, res) => {
                         results[i].dt = timestampToDate(results[i].dt)
                     });
                     res.render("blogPosts", {
-                        posts: results
+                        posts: results,
+                        loggedIn: authenticated,
+                        
                     });
                 })
             }
         });
     } catch (error) {
-        res.render("notAuthorised");
+        res.render("notAuthorised",{
+            loggedIn: authenticated,
+            
+        });
     }
 });
 
@@ -203,7 +250,9 @@ app.post("/post/:id", (req, res) => {
             title: results[0].title,
             content: results[0].content,
             name: results[0].name,
-            date: timestampToDate(results[0].dt)
+            date: timestampToDate(results[0].dt),
+            loggedIn: authenticated,
+            
         });
     })
 });
@@ -213,8 +262,13 @@ app.post("/blogPosts", (req, res) => {
     const user = [name];
     // query the database - return the results and feed them into the users variable in index.hbs
     db.query("SELECT a.*, b.name FROM blog_posts a inner join users b on a.user_id = b.id WHERE b.name like ? order by a.dt desc", `%${user}%`, (error, results) => {
+        results.forEach((result, i) => {
+            results[i].dt = timestampToDate(results[i].dt)
+        });
         res.render("blogPosts", {
-            posts: results
+            posts: results,
+            loggedIn: authenticated,
+            
         });
     })
 });
@@ -231,6 +285,8 @@ app.post("/updateUser/:id", (req, res) => {
             age: results[0].age,
             email: results[0].email,
             password: results[0].pword,
+            loggedIn: authenticated,
+            
         });
     })
 });
@@ -246,6 +302,8 @@ app.post("/profile/:id", (req, res) => {
             location: results[0].location,
             age: results[0].age,
             email: results[0].email,
+            loggedIn: authenticated,
+            
         });
     })
 });
@@ -262,11 +320,15 @@ app.post("/update/:id", async (req, res) => {
     db.query(query, user, (error, results) => {
         if (error) {
             res.render("update", {
-                result: error
+                result: error,
+                loggedIn: authenticated,
+                
             });
         } else {
             res.render("update", {
-                result: "User succesfully updated!"
+                result: "User succesfully updated!",
+                loggedIn: authenticated,
+                
             });
         }
     });
@@ -278,7 +340,9 @@ app.post("/deleteUser/:id", (req, res) => {
     db.query("SELECT * FROM users where id = ?", user, (error, results) => {
         res.render("deleteUser", {
             id: results[0].id,
-            name: results[0].name
+            name: results[0].name,
+            loggedIn: authenticated,
+            
         });
     });
 });
@@ -289,17 +353,23 @@ app.post("/delete/:id", (req, res) => {
     db.query("DELETE FROM blog_posts where user_id = ?", user, (error, results) => {
         if (error) {
             res.render("delete", {
-                result: error
+                result: error,
+                loggedIn: authenticated,
+                
             });
         } else {
             db.query("DELETE FROM users where id = ?", user, (error, results) => {
                 if (error) {
                     res.render("delete", {
-                        result: error
+                        result: error,
+                        loggedIn: authenticated,
+                        
                     });
                 } else {
                     res.render("delete", {
-                        result: "User succesfully removed!"
+                        result: "User succesfully removed!",
+                        loggedIn: authenticated,
+                        
                     });
                 }
             });
@@ -311,15 +381,19 @@ app.get("/register", (req, res) => {
     try {
         const token = req.cookies.topsecret;
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        db.query("SELECT * FROM users where id = ? and role = 'admin'", [decoded.id], (error, results) => {
-            if (results.length === 0) {
-                res.render("notAuthorised");
-            } else {
-                res.render("register");
+        db.query("SELECT * FROM users where id = ?", [decoded.id], (error, results) => {
+            if (results.length === 1) {
+                res.render("alreadyRegistered",{
+                    loggedIn: authenticated,
+                    
+                });
             }
         });
     } catch (error) {
-        res.render("notAuthorised");
+        res.render("register",{
+            loggedIn: authenticated,
+            
+        });
     }
 });
 
@@ -330,12 +404,16 @@ app.post("/register", (req, res) => {
     db.query("SELECT * FROM users where email = ?", emailAdd, async (error, results) => {
         if (error) {
             res.render("register", {
-                result: error
+                result: error,
+                loggedIn: authenticated,
+                
             });
         } else {
             if (results.length > 0) {
                 res.render("register", {
-                    result: `User already exists with email address: ${email}`
+                    result: `User already exists with email address: ${email}`,
+                    loggedIn: authenticated,
+                    
                 });
             } else {
                 //object destructuring
@@ -351,15 +429,21 @@ app.post("/register", (req, res) => {
                         job: userJob,
                         email: email,
                         pword: hashedPassword,
+                        loggedIn: authenticated,
+                        
                     },
                     (error, results) => {
                         if (error) {
                             res.render("register", {
-                                result: error
+                                result: error,
+                                loggedIn: authenticated,
+                                
                             });
                         } else {
                             res.render("register", {
-                                result: "User added succesfully!"
+                                result: "User added succesfully!",
+                                loggedIn: authenticated,
+                                
                             });
                         }
                     }
@@ -379,7 +463,10 @@ const timestampToDate = (date) => {
 }
 
 app.get('*', function (req, res) {
-    res.status(404).render("pagenotfound");
+    res.status(404).render("pagenotfound",{
+                loggedIn: authenticated,
+                
+    });
 });
 
 app.listen(5000, () => {
